@@ -5,7 +5,7 @@ The general design principle behind Jupiter is to try and contain as much of the
 of the application (models, controller, and especially views) can be as close to "Rails-normal" as possible. There are several motivations for doing this:
 
 - Ease of hiring people in the future. Outside of a very small pool of library-experienced developers, NOBODY understands Fedora/ActiveFedora, and this problem
-if only going to increase as the community moves on. This costs MONTHS of increased onboarding time.
+is only going to increase as the community moves on. This costs MONTHS of increased onboarding time.
 
 -  Increasing productivity. The Rails environment has shown itself to be a productive one for developers. The Sufia/Hyrax development patterns have shown themselves
 to be much more difficult to wrestle with productively. We should take the hint and follow the patterns that get things done. Additionally, MOST of the open source libraries out there
@@ -30,7 +30,7 @@ active_storage_macros.rb -- duplicates the ActiveStorage DSL but uses attachment
 attachment_shim.rb -- a placeholder object that "owns" the ActiveStorage attachment data and can be looked up by the ID of the associated ActiveFedora object
 
 indexer.rb -- ActiveFedora uses "indexer" classes for each class inheriting from ActiveFedora::Base that control which properties from activefedora appear in solr.
-since creating these was a lot of busywork & forgetting to update these classes was a rich source of bugs, we just use one class shared among everything inheriting
+Since creating these was a lot of busywork & forgetting to update these classes was a rich source of bugs, we just use one class shared among everything inheriting
 from LockedLDPObject, which indexes everything and adds hooks for adding additional indexes.
 
 
@@ -45,9 +45,9 @@ deferered_faceted_solr_query.rb -- object representing a not-yet-complete Solr q
 
 deferred_simple_solr_query.rb -- object representing a not-yet-complete Solr query which attempts to provide enough of a basic ActiveRecord-like API that most of the app can use it as a drop-in replacement for ActiveRecord (without trying to go overboard and cover ALL of ActiveRecord. This is like the 5% we can limp by on)
 
-facet result -- encapsulates a facet result "category" and any facet hits underneath it. maps the mangled solr index name to a human-readable name and provides iteration of facet hits
+facet result -- encapsulates a facet result "category" and any facet hits underneath it. Maps the mangled solr index name to a human-readable name and provides iteration of facet hits
 
-range facet result -- encapsulates a facet result "category" containing a simple range. maps the mangled solr index name to a human-readable name.
+range facet result -- encapsulates a facet result "category" containing a simple range. Maps the mangled solr index name to a human-readable name.
 
 
 The Core Abstraction over ActiveFedora
@@ -62,7 +62,7 @@ NOTE: there's one unfortunate incompatibility that crept in here, which is that 
 Every instance of a locked_ldp_object is at heart a solr document (in the form of a parsed hash) mapping solr_mangled_name properties to values.
 
 It may also OPTIONALLY contain have a loaded "ldp_object", an instance of an ActiveFedora object loaded via ActiveFedora. This will only be loaded when `unlock_and_fetch_ldp_object` is run.
-solr documents are READ-ONLY. ldp_objects are READ-WRITE. Because ldp_objects are not normally loaded,
+Solr documents are READ-ONLY. ldp_objects are READ-WRITE. Because ldp_objects are not normally loaded,
 interacting with a subclass of locked_ldp_object only involves querying Solr, which is fast, and bypasses talking to ActiveFedora or raw Fedora entirely
 
 
@@ -82,7 +82,7 @@ several things happen. As this item subclass is being created in memory (ie, dur
 2) Defines some basic attributes and their predicates for the new subclass if they're not already present.
 These are visibility, owner, record_created_at, hyrdra_noid, and date_ingested.
 
-defining any attributes in the new subclass (among other things), will cause a corresponding ActiveFedora class to be generated (this happens the first time derived_af_class is run, as it runs generate_af_class if its not already defined). As a simple example:
+Defining any attributes in the new subclass (among other things), will cause a corresponding ActiveFedora class to be generated (this happens the first time derived_af_class is run, as it runs generate_af_class if its not already defined). As a simple example:
 
 ```ruby
 class Item < JupiterCore::LockedLdpObject
@@ -97,7 +97,7 @@ causes the following to happen:
     - adds a method named `owning_object` to IRItem. Calling owning object on an IRItem instance will return
     the corresponding Item instance.
     - defines several basic validations, as all validation mechanism are run via ActiveFedora. This run_validations
-     enforce the presence of visibility, an owner, record_created_at, and date_ingested. call backs are added to automatically populate the date_ingested and record_created_at.
+     enforce the presence of visibility, an owner, record_created_at, and date_ingested. Call backs are added to automatically populate the date_ingested and record_created_at.
     - defines methods to check whether something just transitioned to or from private visibility (needed for DOI logic)
     - defines a `convert_value` method used internally in the ActiveFedora objects. We use this to pre-convert values (or raise an error if they're the wrong type) to the type they were
     declared to be BEFORE handing them to ActiveFedora, which is extremely buggy and generally silently does bad things. An example
